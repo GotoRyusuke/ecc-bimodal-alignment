@@ -77,7 +77,7 @@ Each step in the following workflow is largely independent of the other, so you 
 | 2    | 1    | Thank you. So ...    | 51.4 | 191.9|
 
 The slices will be saved to a local folder if the `save_folder` arg is given. The output of the sample data can be found [here](data/test_aligned_content.csv). 
-All the slices corresponding to the sample call are saved in the `data` folder. You may check the `.csv` file with the `.wav` files to check whether the slice correctly captures the content of one's speech.
+All the slices corresponding to the sample call are saved in the `data/test_align` folder. You may check the `.csv` file with the `.wav` files to check whether the slice correctly captures the content of one's speech.
 
 
 ## Dependencies and environment

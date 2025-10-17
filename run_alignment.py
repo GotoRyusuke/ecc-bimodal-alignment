@@ -1,6 +1,7 @@
 import json
 import torch
 import torchaudio
+import pandas as pd
 from dataclasses import asdict
 from DataClass import Point, Segment
 from utils import timer, preprocess, load_audio
@@ -136,6 +137,29 @@ def save_segments(segments, dir_output):
         print(f"\nError saving file: {e}")
 
 
+class ConfCallAligner:
+    def __init__(self, dir_panel, dir_master_wav, dir_master_txt):
+        self.dir_panel = dir_panel
+        self.panel = pd.read_parquet(dir_panel)
+        self.dir_master_wav = dir_master_wav
+        self.dir_master_txt = dir_master_txt
+
+    def _align_single_call(self, idx):
+        ticker = self.panel.loc[idx, 'ticker']
+        sa_id = self.panel.loc[idx, 'sa_transcript_id']
+        dir_wav = f'{self.dir_master_wav}/{ticker}/{sa_id}.wav'
+
+        year = self.panel.loc[idx, 'year']
+        file_name = self.panel.loc[idx, 'file']
+        dir_txt = f'{self.dir_master_txt}/{year}/{file_name}/content.parquet'
+
+        print(dir_wav, dir_txt)
+
+        # segments = gen_segments(dir_mp3, dir_txt)
+        #return segments
+
+#Todo: a function to gen pandas dataframe for slices. Before that, check the relationship between sample_rate, bundle sample rate, trellis size, and waveform size
+
 if __name__ == '__main__':
     # CUDA settings
     print(torch.__version__)
@@ -144,14 +168,23 @@ if __name__ == '__main__':
     print(device)
     torch.random.manual_seed(0)
 
-    SPEECH_FILE = 'test.wav'
-    TEXT_FILE = 'test.txt'
+    DIR_PANEL = 'data/panel_transcript-recording-merged_2017-2021_R71010.parquet'
+    ###
+    DIR_MASTER_WAV = 'E:/REC/Data_rawMP3'
+    ###
+    DIR_MASTER_TXT = 'E:/ECC Transcripts/Data_texts'
 
-    # Run CTC alignment
-    word_segments = gen_segments(SPEECH_FILE, TEXT_FILE)
+    aligner = ConfCallAligner(DIR_PANEL, DIR_MASTER_WAV, DIR_MASTER_TXT)
+    test = aligner._align_single_call(0)
 
+    # SPEECH_FILE = 'test.wav'
+    # TEXT_FILE = 'test.txt'
+    #
+    # # Run CTC alignment
+    # word_segments = gen_segments(SPEECH_FILE, TEXT_FILE)
+    #
     # Save segments
-    save_segments(word_segments, 'test_segments.json')
+    # save_segments(test, 'test_segments.json')
     
     
     

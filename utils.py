@@ -38,14 +38,19 @@ def gen_audio_segment(torch_wave, start:float, end:float, dir_output:str):
 
     torchaudio.save(dir_output, segment_cpu, sample_rate)
 
-def gen_timestamp(dir_json:str, sample_rate:float=50):
+def load_wordsegments(dir_json:str):
     with open(dir_json, 'r') as f:
         loaded_data = json.load(f)
     seg = [Segment(**data) for data in loaded_data]
 
+    return seg
+
+def gen_timestamp(dir_json:str, bundle_sample_rate:float=50):
+    seg = load_wordsegments(dir_json)
+
     dict_timestamp = list()
     for idx_segment, segment in enumerate(seg):
-        sec_start, sec_end = segment.start / sample_rate, segment.end / sample_rate
+        sec_start, sec_end = segment.start / bundle_sample_rate, segment.end / bundle_sample_rate
         word_timestamp = WordStamp(
             segment.label,
             sec_start,

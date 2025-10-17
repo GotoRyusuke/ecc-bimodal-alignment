@@ -11,7 +11,7 @@ You would need two files for a call to implement the alignment:
 Make sure that your recording file is in `.wav` format since the library relies on the `WAV2VEC` algo. Refer to [this example](quick_conversion.py) for a quick implementation of 
 `.mp3`-to-`.wav` conversion.
 
-Additionally, if you have your transcript diarised in a similar format like this
+Additionally, if you have your transcript organised in a similar format like this
 
 | node | speaker id | text |
 |-----------|-----------|-----------|
@@ -71,7 +71,7 @@ Each step in the following workflow is largely independent of the other, so you 
 
 3. **Extract slices**
 
-   If the transcript has been diarised, then you may extract the recording slices of each speaker with the help of [`gen_speech_timestamp`](utils.py#L8). The output would be a pandas df like:
+   If the transcript has been organised in sequential order, then you may extract the recording slices of each speaker with the help of [`gen_speech_timestamp`](utils.py#L8). The output would be a pandas df like:
 
 | node | speaker id | text | start_sec | end_sec |
 |-----------|-----------|-----------|-----------|-----------|

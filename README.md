@@ -8,7 +8,7 @@ You would need two files for a call to implement the alignment:
 1. The complete transcript of a call (see an example [here](data/test_txt.txt))
 2. The complete recording of a call (see an example [here](data/test_wav.wav))
 
-Make sure that your recording file is in `.wav` format since the library relies on the `WAV2VEC` algo. Refer [`format_convert`](format_convert.py) for a quick implementation of 
+Make sure that your recording file is in `.wav` format since the library relies on the `WAV2VEC` algo. Refer to [`format_convert`](format_convert.py) for a quick implementation of 
 `.mp3` to `.wav` conversion.
 
 Additionally, if you have your transcript diarised in a similar format like this

@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from jsonUtils import gen_timestamp, load_wordsegments
 from audioUtils import load_audio, gen_audio_segment
-from utils import gen_speech_timstamp
+from utils import gen_speech_timestamp
 
 
 os.chdir('F:/ecc-bimodal-alignment')
@@ -28,5 +28,5 @@ dir_audio = 'data/test_wav.wav'
 torch_audio = load_audio(dir_audio)
 
 # Check generating alignment df
-aligned_content = gen_speech_timstamp(dict_timestamp, torch_audio, content, 'data/test_align')
+aligned_content = gen_speech_timestamp(dict_timestamp, torch_audio, content, 'data/test_align')
 aligned_content.to_csv('data/test_aligned_content.csv', index=False)

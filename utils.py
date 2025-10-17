@@ -5,7 +5,7 @@ from audioUtils import gen_audio_segment
 from textUtils import preprocess
 
 
-def gen_speech_timstamp(timestamp, audio, content, save_folder=None):
+def gen_speech_timestamp(timestamp, audio, content, save_folder=None):
     speech = content.copy()
     word_times = [(word.start, word.end) for word in timestamp]
     # slices = []

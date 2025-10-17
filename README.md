@@ -25,7 +25,6 @@ The current repo is largely based on [this tutorial](https://docs.pytorch.org/au
 Each step in the following workflow is largely independent of the other, so you may adapt it to your own needs and data structure (For steps 2 and 3, refer to the [`test`](test.py) file).
 
 1. **Alignment at word level**
-2. 
    With the transcript and recording ready under the `data` folder under cwd, we perform CTC alignment with the help of the [`torchaudio`](https://github.com/pytorch/audio) library, which is open-sourced and user-friendly.
    Use the [`gen_segments`](run_alignment.py#L12) function in the [`run_alignment`](run_alignment.py) module to generate a list of [`Segment`](DataClass.py#L10) objects, which have the following attributes:
    - `label`(str): the word

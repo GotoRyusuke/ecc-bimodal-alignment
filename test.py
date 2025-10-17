@@ -12,6 +12,7 @@ dict_timestamp = gen_timestamp(DIR_JSON)
 
 DIR_CONTENT = 'data/test_content.parquet'
 content = pd.read_parquet(DIR_CONTENT)
+content.to_csv('data/test_content.csv', index=False)
 
 # # Check the length
 # from utils import preprocess
@@ -25,9 +26,6 @@ content = pd.read_parquet(DIR_CONTENT)
 # Check the slice
 dir_audio = 'data/test_wav.wav'
 torch_audio = load_audio(dir_audio)
-idx_content = 47
-start, end = content.loc[idx_content, ['start_sec', 'end_sec']]
-test_slice = gen_audio_segment(torch_audio, start, end, 'data/test_slice.wav')
 
 # Check generating alignment df
 aligned_content = gen_speech_timstamp(dict_timestamp, torch_audio, content, 'data/test_align')

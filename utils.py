@@ -6,12 +6,13 @@ from textUtils import preprocess
 
 
 def gen_speech_timstamp(timestamp, audio, content, save_folder=None):
+    speech = content.copy()
     word_times = [(word.start, word.end) for word in timestamp]
     # slices = []
 
     start_idx = 0
     start_end_times = []
-    for i, row in content.iterrows():
+    for i, row in speech.iterrows():
         words = preprocess(row["text"], sep=' ').split()
         end_idx = start_idx + len(words)
 
@@ -30,12 +31,11 @@ def gen_speech_timstamp(timestamp, audio, content, save_folder=None):
             folder = f'{save_folder}/{session}'
             os.makedirs(folder, exist_ok=True)
             dir_save = f'{folder}/{node}.wav'
-
-        audio_slice = gen_audio_segment(audio, start_time, end_time, dir_save)
+            gen_audio_segment(audio, start_time, end_time, dir_save)
         # slices.append(audio_slice)
-    content["start_sec"], content["end_sec"] = zip(*start_end_times)
+    speech["start_sec"], speech["end_sec"] = zip(*start_end_times)
     # content['slice'] = slices
-    return content
+    return speech
 
 def timer(func):
     @wraps(func)

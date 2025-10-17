@@ -1,44 +1,33 @@
-
 import os
 import pandas as pd
-from utils import load_wordsegments, gen_timestamp
-from multiModalCallData import MultiModCall
-os.chdir('F:/project_cctranscripts/ecc-bimodal-alignment')
+from jsonUtils import gen_timestamp, load_wordsegments
+from audioUtils import load_audio, gen_audio_segment
+from utils import gen_speech_timstamp
+
+
+os.chdir('F:/ecc-bimodal-alignment')
 
 DIR_JSON = 'data/test_segments.json'
 dict_timestamp = gen_timestamp(DIR_JSON)
-dict_wordsegments = load_wordsegments(DIR_JSON)
 
 DIR_CONTENT = 'data/test_content.parquet'
 content = pd.read_parquet(DIR_CONTENT)
 
-panel = pd.read_parquet('data/panel_transcript-recording-merged_2017-2021_R71010.parquet')
+# # Check the length
+# from utils import preprocess
+# ls_word_labels = [word.label for word in dict_timestamp]
+# ls_content = content['text'].to_list()
+# ls_text = [preprocess(text, sep=' ').split() for text in ls_content]
+# num_labels = len(ls_word_labels)
+# num_content = sum([len(text) for text in ls_text])
+# -> the number of labels and length of original text (after pre-processing) are the same. One-to-one alignment is viable
 
-idx = 134
-test_audio = MultiModCall(
-    panel.loc[idx, 'sa_transcript_id'],
-    panel.loc[idx, 'factset_transcript_id'],
-    panel.loc[idx, 'file'],
-    panel.loc[idx, 'title'],
-    panel.loc[idx, 'gvkey'],
-    panel.loc[idx, 'ticker'],
-    panel.loc[idx, 'permno'],
-    panel.loc[idx, 'date'],
-    panel.loc[idx, 'year'],
-    panel.loc[idx, 'fiscal_year'],
-    panel.loc[idx, 'fiscal_period'],
-    panel.loc[idx, 'duration']
-)
+# Check the slice
+dir_audio = 'data/test_wav.wav'
+torch_audio = load_audio(dir_audio)
+idx_content = 47
+start, end = content.loc[idx_content, ['start_sec', 'end_sec']]
+test_slice = gen_audio_segment(torch_audio, start, end, 'data/test_slice.wav')
 
-DIR_MASTER_MP3 = 'E:/REC/Data_rawMP3'
-DIR_MASTER_TXT = 'E:/ECC Transcripts/Data_texts'
-test_audio._gen_multimodal(DIR_MASTER_MP3, DIR_MASTER_TXT)
-
-segment = test_audio.gen_slice(0, 18.26, test_audio.sample_rate)
-
-import torchaudio
-torchaudio.save(
-    "slice.wav",          # output filename
-    segment,       # waveform tensor
-    test_audio.sample_rate      # sample rate (same as original)
-)
+# Check generating alignment df
+aligned_content = gen_speech_timstamp(dict_timestamp, torch_audio, content, 'data/test_align')

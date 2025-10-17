@@ -1,10 +1,10 @@
-import json
 import torch
 import torchaudio
-import pandas as pd
-from dataclasses import asdict
 from DataClass import Point, Segment
-from utils import timer, preprocess, load_audio
+from utils import timer
+from textUtils import preprocess
+from audioUtils import load_audio
+from jsonUtils import save_json_segments
 
 
 @timer
@@ -127,17 +127,10 @@ def gen_segments(dir_mp3, dir_txt):
 
     return word_segments
 
-def save_segments(segments, dir_output):
-    data = [asdict(segment) for segment in segments]
-    try:
-        with open(dir_output, 'w') as f:
-            json.dump(data, f, indent=4)
-        print(f"\nSuccessfully saved {len(dir_output)} segments to {dir_output}")
-    except IOError as e:
-        print(f"\nError saving file: {e}")
-
-
+# Ignore this class for it's not done yet
+'''
 class ConfCallAligner:
+    # For chunk alignment 
     def __init__(self, dir_panel, dir_master_wav, dir_master_txt):
         self.dir_panel = dir_panel
         self.panel = pd.read_parquet(dir_panel)
@@ -155,10 +148,9 @@ class ConfCallAligner:
 
         print(dir_wav, dir_txt)
 
-        # segments = gen_segments(dir_mp3, dir_txt)
+        #segments = gen_segments(dir_mp3, dir_txt)
         #return segments
-
-#Todo: a function to gen pandas dataframe for slices. Before that, check the relationship between sample_rate, bundle sample rate, trellis size, and waveform size
+'''
 
 if __name__ == '__main__':
     # CUDA settings
@@ -168,23 +160,25 @@ if __name__ == '__main__':
     print(device)
     torch.random.manual_seed(0)
 
-    DIR_PANEL = 'data/panel_transcript-recording-merged_2017-2021_R71010.parquet'
-    ###
-    DIR_MASTER_WAV = 'E:/REC/Data_rawMP3'
-    ###
-    DIR_MASTER_TXT = 'E:/ECC Transcripts/Data_texts'
+    SPEECH_FILE = 'test.wav'
+    TEXT_FILE = 'test.txt'
 
-    aligner = ConfCallAligner(DIR_PANEL, DIR_MASTER_WAV, DIR_MASTER_TXT)
-    test = aligner._align_single_call(0)
+    # Run CTC alignment
+    word_segments = gen_segments(SPEECH_FILE, TEXT_FILE)
 
-    # SPEECH_FILE = 'test.wav'
-    # TEXT_FILE = 'test.txt'
-    #
-    # # Run CTC alignment
-    # word_segments = gen_segments(SPEECH_FILE, TEXT_FILE)
-    #
     # Save segments
-    # save_segments(test, 'test_segments.json')
+    save_json_segments(word_segments, 'test_segments.json')
+
+
+    # TODO: for chunk alignment
+    # DIR_PANEL = 'data/panel_transcript-recording-merged_2017-2021_R71010.parquet'
+    # ###
+    # DIR_MASTER_WAV = 'E:/REC/Data_rawMP3'
+    # ###
+    # DIR_MASTER_TXT = 'E:/ECC Transcripts/Data_texts'
+    #
+    # aligner = ConfCallAligner(DIR_PANEL, DIR_MASTER_WAV, DIR_MASTER_TXT)
+    # test = aligner._align_single_call(0)
     
     
     

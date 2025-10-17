@@ -1,9 +1,41 @@
-import json
+import os
 import time
-import torchaudio
 from functools import wraps
-from DataClass import Segment, WordStamp
+from audioUtils import gen_audio_segment
+from textUtils import preprocess
 
+
+def gen_speech_timstamp(timestamp, audio, content, save_folder=None):
+    word_times = [(word.start, word.end) for word in timestamp]
+    # slices = []
+
+    start_idx = 0
+    start_end_times = []
+    for i, row in content.iterrows():
+        words = preprocess(row["text"], sep=' ').split()
+        end_idx = start_idx + len(words)
+
+        if end_idx > len(word_times):
+            raise ValueError(f"Text in row {i} exceeds total words length.")
+
+        start_time = word_times[start_idx][0]
+        end_time = word_times[end_idx - 1][1]
+
+        start_end_times.append((start_time, end_time))
+        start_idx = end_idx  # Move pointer
+
+        if save_folder:
+            session = row['session']
+            node = row['node']
+            folder = f'{save_folder}/{session}'
+            os.makedirs(folder, exist_ok=True)
+            dir_save = f'{folder}/{node}.wav'
+
+        audio_slice = gen_audio_segment(audio, start_time, end_time, dir_save)
+        # slices.append(audio_slice)
+    content["start_sec"], content["end_sec"] = zip(*start_end_times)
+    # content['slice'] = slices
+    return content
 
 def timer(func):
     @wraps(func)
@@ -19,43 +51,3 @@ def timer(func):
         return result
     return wrapper
 
-def remove_punc(word):
-    return ''.join(char for char in word if char.isalpha())
-
-def preprocess(text):
-    tokens = text.upper().split()
-    words = [remove_punc(token) for token in tokens]
-
-    return '|'.join([word for word in words if len(word) > 0])
-
-def load_audio(dir_audio):
-    return torchaudio.load(dir_audio)
-
-def gen_audio_segment(torch_wave, start:float, end:float, dir_output:str):
-    waveform, sample_rate = torch_wave
-    segment = waveform[:, start:end]
-    segment_cpu = segment.cpu()
-
-    torchaudio.save(dir_output, segment_cpu, sample_rate)
-
-def load_wordsegments(dir_json:str):
-    with open(dir_json, 'r') as f:
-        loaded_data = json.load(f)
-    seg = [Segment(**data) for data in loaded_data]
-
-    return seg
-
-def gen_timestamp(dir_json:str, bundle_sample_rate:float=50):
-    seg = load_wordsegments(dir_json)
-
-    dict_timestamp = list()
-    for idx_segment, segment in enumerate(seg):
-        sec_start, sec_end = segment.start / bundle_sample_rate, segment.end / bundle_sample_rate
-        word_timestamp = WordStamp(
-            segment.label,
-            sec_start,
-            sec_end
-        )
-        dict_timestamp.append(word_timestamp)
-
-    return dict_timestamp

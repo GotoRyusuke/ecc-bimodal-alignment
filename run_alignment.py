@@ -160,8 +160,8 @@ if __name__ == '__main__':
     print(device)
     torch.random.manual_seed(0)
 
-    SPEECH_FILE = 'test.wav'
-    TEXT_FILE = 'test.txt'
+    SPEECH_FILE = 'data/test.wav'
+    TEXT_FILE = 'data/test.txt'
 
     # Run CTC alignment
     word_segments = gen_segments(SPEECH_FILE, TEXT_FILE)

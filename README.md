@@ -1,7 +1,14 @@
-# Applying CTC Alignment on Earnings Conference Calls
+# Applying CTC Forced Alignment on Earnings Conference Calls
 
 ## Overview
-This project provides a simple and step-by-step instruction to apply CTC alignment on transcripts and recordings of earnings conference calls.
+This project provides a simple and step-by-step instruction to apply CTC Forced alignment on transcripts and recordings of earnings conference calls.
+
+## Dependencies and environment
+The alignment here mainly leverages `torchaudio`, and as a required part for audio processing, please check whether [ffmpeg](https://www.ffmpeg.org/) is well employed on your terminal. Please note that `ffmpeg v8.0` seems incompatible with current versions of `torchaudio`. 
+Pay attention to the version you are employing.
+
+I implemented the alignment for this tutorial on an NVIDIA A100 GPU with 8 CPUs and 64 GB RAM in the preset `pytorch` environment (for the versions of the packages, check [here](https://scrp.econ.cuhk.edu.hk/info/pytorch-list)) through the [SCRP](https://scrp.econ.cuhk.edu.hk/) under the Department of Economics, The CU of HK. 
+I accessed the service on 15/10/2025.
 
 ## Data
 You would need two files for a call to implement the alignment:
@@ -11,14 +18,14 @@ You would need two files for a call to implement the alignment:
 Make sure that your recording file is in `.wav` format since the library relies on the `WAV2VEC` algo. Refer to [this example](quick_conversion.py) for a quick implementation of 
 `.mp3`-to-`.wav` conversion.
 
-Additionally, if you have your transcript organised in a similar format like this
+Additionally, if you have your transcript organised in a similar format to this one
 
 | node | speaker id | text |
 |-----------|-----------|-----------|
 | 1    | 0    | Hello and welcome! ...    |
 | 2    | 1    | Thank you. So ...    |
 
-Then this tutorial will also help you extract slices of a recording corresponding to each node of the call.
+then this tutorial will also help you extract slices of a recording corresponding to each node of the call.
 
 ## Workflow
    **IMPORTANT**
@@ -28,6 +35,7 @@ The current repo is largely based on [this tutorial](https://docs.pytorch.org/au
 Each step in the following workflow is largely independent of the other, so you may adapt it to your own needs and data structure (For steps 2 and 3, refer to the [`test`](test.py) file).
 
 1. **Alignment at word level**
+
    With the transcript and recording ready under the `data` folder under cwd, we perform CTC alignment with the help of the [`torchaudio`](https://github.com/pytorch/audio) library, which is open-sourced and user-friendly.
    Use the [`gen_segments`](ECCAligner.py#L12) function in the [`ECCAligner`](ECCAligner.py) module to generate a list of [`Segment`](DataClass.py#L10) objects, which have the following attributes:
    - `label`(str): the word
@@ -35,7 +43,7 @@ Each step in the following workflow is largely independent of the other, so you 
    - `end`(int): the end frame
    - `score`(float): the score of stay vs change
 
-   The test section in this module shows how to run the simple execution and save the output to a JSON file for later use. The output based on the sample transcript and recording can be found [here](data/test_segments.json). Here is a snapshot:
+   The [test section](ECCAligner.py#L155) in this module shows how to run the simple execution and save the output to a JSON file for later use. The output based on the sample transcript and recording can be found [here](data/test_segments.json). Here is a snapshot:
  ```
 [
     {
@@ -67,11 +75,11 @@ Each step in the following workflow is largely independent of the other, so you 
 2. **Obtain timestaps**
 
    It may be of more use if we know the start and end seconds of a word instead of the frame representation. Use the [`gen_timstamp`](jsonUtils.py#L11) function to do this. Note that the output is a list of [`WordStamp`](DataClass.py#L24) objects, which are
-   similar to the `Segment` data class, but do not have the `score` attribute. Now we have the starts and ends for words in the transcript in a sequential order.
+   similar to the `Segment` data class, but do not have the `score` attribute. Now we have the starts and ends for words in the transcript in a sequential order. (Check [here](test.py#L11) to see how to call this function)
 
 3. **Extract slices**
 
-   If the transcript has been organised in sequential order, then you may extract the recording slices of each speaker with the help of [`gen_speech_timestamp`](utils.py#L8). The output would be a pandas df like:
+   If the transcript has been organised in sequential order, then you may extract the recording slices of each speaker with the help of [`gen_speech_timestamp`](utils.py#L8) (Check [here](test.py#L31) to see how to call this function). The output would be a pandas df like:
 
 | node | speaker id | text | start_sec | end_sec |
 |-----------|-----------|-----------|-----------|-----------|
@@ -82,10 +90,4 @@ The slices will be saved to a local folder if the `save_folder` arg is given. Th
 All the slices corresponding to the sample call are saved in the `data/test_align` folder. You may check the `.csv` file with the `.wav` files to check whether the slice correctly captures the content of one's speech.
 
 
-## Dependencies and environment
-The alignment here mainly leverages `torchaudio`, and as a required part for audio processing, please check whether [ffmpeg](https://www.ffmpeg.org/) is well employed on your terminal. Please note that `ffmpeg v8.0` seems incompatible with current versions of `torchaudio`. 
-Pay attention to the version you are employing.
-
-I implemented the alignment for this tutorial on an NVIDIA A100 GPU with 8 CPUs and 64 GB RAM in the preset `pytorch` environment (for the versions of the packages, check [here](https://scrp.econ.cuhk.edu.hk/info/pytorch-list)) through the [SCRP](https://scrp.econ.cuhk.edu.hk/) under the Department of Economics, The CU of HK. 
-I accessed the service on 15/10/2025.
 

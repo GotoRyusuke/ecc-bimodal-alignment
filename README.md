@@ -1,7 +1,12 @@
 # Applying CTC Forced Alignment on Earnings Conference Calls
 
 ## Overview
-This project provides a simple and step-by-step instruction to apply CTC Forced alignment on transcripts and recordings of earnings conference calls.
+This project provides a simple and step-by-step instruction to apply CTC Forced Alignment on transcripts and recordings of earnings conference calls.
+
+## Updates
+###(R7/03/03) Updates
+- Batch processing now available. Check the [`batchUtil`](batchUtil.py) module for details.
+- Testing for the `batchUtil` model added 
 
 ## Dependencies and environment
 The alignment here mainly leverages `torchaudio`, and as a required part for audio processing, please check whether [ffmpeg](https://www.ffmpeg.org/) is well employed on your terminal. Please note that `ffmpeg v8.0` seems incompatible with current versions of `torchaudio`. 

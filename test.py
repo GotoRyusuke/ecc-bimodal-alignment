@@ -9,7 +9,7 @@ from utils import gen_speech_timestamp
 from jsonUtils import save_json_segments
 
 
-os.chdir('F:/ecc-bimodal-alignment')
+os.chdir('****') # CWD 
 
 ## GET SEGMENTS
 print(torch.__version__) # CUDA settings
@@ -50,3 +50,12 @@ torch_audio = load_audio(dir_audio)
 ## GENERATE ALIGNED DF
 aligned_content = gen_speech_timestamp(dict_timestamp, torch_audio, content, 'data/test_align')
 aligned_content.to_csv('data/test_aligned_content.csv', index=False)
+
+## TEST BATCH PROCESSING
+DIR_PANEL = '****' # Path to the panel data of the records, check the .csv file in the'data' folder for an example
+FD_TXT = '****' # Path to the folder where text data is saved
+FD_WAV = '****' # Path to the folder where .wav data is saved
+FD_ALIGNED = '****' # Path to the folder where aligned data (slice of recordings + texts) is saved
+
+aligner = ConfCallAligner(DIR_PANEL=DIR_PANEL, FD_WAV=FD_WAV, FD_TXT=FD_TXT, FD_ALIGNED=FD_ALIGNED)
+tmp = aligner._align_single_call(call_idx=0) # Perform alignment for the first file in the panel

@@ -4,7 +4,7 @@
 This project provides a simple and step-by-step instruction to apply CTC Forced Alignment on transcripts and recordings of earnings conference calls.
 
 ## Updates
-###(R7/03/03) Updates
+### (R7/03/03) Updates
 - Batch processing now available. Check the [`batchUtil`](batchUtil.py) module for details.
 - Testing for the `batchUtil` model added 
 

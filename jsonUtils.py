@@ -1,6 +1,6 @@
 import json
 from dataclasses import asdict
-from DataClass import Segment, WordStamp
+from dataClass import Segment, WordStamp
 
 
 def load_wordsegments(dir_json:str):
@@ -8,8 +8,12 @@ def load_wordsegments(dir_json:str):
         loaded_data = json.load(f)
     return [Segment(**data) for data in loaded_data]
 
-def gen_timestamp(dir_json:str, bundle_sample_rate:float=50):
-    seg = load_wordsegments(dir_json)
+def gen_timestamp(seg=None, dir_json:str=False, bundle_sample_rate:float=50):
+    if dir_json:
+        seg = load_wordsegments(dir_json)
+    if seg is None:
+        print('No segments given!')
+        return None
 
     dict_timestamp = list()
     for idx_segment, segment in enumerate(seg):

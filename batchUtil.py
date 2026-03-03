@@ -89,12 +89,3 @@ class ConfCallAligner:
 
         return self.panel
 
-if __name__ == '__main__':
-    DIR_PANEL = 'panel_transcript-recording-merged_2017-2021_R71010.csv'
-    FD_TXT = 'G:/ECC Transcripts/Data_texts'
-    FD_WAV = 'G:/REC/data_wav'
-    FD_ALIGNED = 'G:/REC/data_txt'
-
-    aligner = ConfCallAligner(DIR_PANEL=DIR_PANEL, FD_WAV=FD_WAV, FD_TXT=FD_TXT, FD_ALIGNED=FD_ALIGNED)
-    tmp = aligner._align_single_call(call_idx=0)
-
